@@ -74,7 +74,7 @@ void sendSIGUSR1(pid_t pid) {
 
 int findMafia(int *mafia) {
     //confession.txt 파일의 결과는 !!! 혹은 ... 인 것으로 확인했기 때문
-    char evi[4];
+    char evi[256];
     int cnt=0;
 
     //confession.txt 파일 열기
@@ -86,7 +86,7 @@ int findMafia(int *mafia) {
     }
     
     for(int i=0; fgets(evi, sizeof(evi), eviFp) != NULL; i++) {
-        if (strstr(evi, "!") != NULL) {
+        if (strstr(evi, "!!!") != NULL) {
             mafia[cnt++] = i;
         }
     }
@@ -99,6 +99,7 @@ int main() {
     int numPeople;
     int mafia[MAX_PROCESS]; //mafia의 pid를 저장
     int numMafia;
+    char delay;
 
     // linuxtown_class 실행파일에 의해서 생성된 프로세스의 PID를 pids 배열에 넣고
     // 그 개수를 numPeople에 return
@@ -113,6 +114,13 @@ int main() {
         pid=pids[i];
         sendSIGUSR1(pid);
     }
+
+    //confession.txt 파일에 !!! or ...가 적용되는데 오랜 시간이 걸림
+    //.. 표시가 10개 나올 때 까지 대기 후 findMafia 실행
+    //일정시간동안 wait 시키려고 했으나, 적용되는데 걸리는 시간이 pc상황에 따라 다름
+    printf("Please wait until there are more than 10 !! marks\n");
+    printf("and then enter any character : ");
+    scanf("%c", &delay);
 
     numMafia = findMafia(mafia);
     if (numMafia == -1) {
