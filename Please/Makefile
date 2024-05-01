@@ -1,14 +1,14 @@
 sumfact.o : sumfact.c
 	gcc -c sumfact.c
 
-sumfact : sumfact.o
-	gcc sumfact.o -o sumfact
-
+sumfact : sumfact.c
+	gcc -o sumfact sumfact.c
+.
 launch.o : launch.c
 	gcc -c launch.c
 
-launch : launch.o
-	gcc launch.o -o launch
+launch : launch.c
+	gcc -o launch launch.c
 
 clean:
 	rm -f launch launch.o sumfact sumfact.o
