@@ -1,11 +1,7 @@
-sumfact.o : sumfact.c
-	gcc -c sumfact.c
+all : launch sumfact
 
 sumfact : sumfact.c
 	gcc -o sumfact sumfact.c
-.
-launch.o : launch.c
-	gcc -c launch.c
 
 launch : launch.c
 	gcc -o launch launch.c
