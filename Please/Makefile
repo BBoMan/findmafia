@@ -1,4 +1,4 @@
-all : launch sumfact
+all : sim
 
 sim : sim.c
 	gcc -o sim sim.c
