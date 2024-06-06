@@ -24,7 +24,6 @@ int getPIDs(pid_t *pids) {
     while ((entry = readdir(dir)) != NULL) {
         // 현재 entry가 diretory인지 확인, /proc directory 내의 각 프로세스의 정보가 directory 형태로 존재하기 때문
         if (entry->d_type == DT_DIR) {
-            // 디렉토리 이름이 숫자인 경우 (프로세스의 PID)
             char *endptr;
             // PID값이 문자열로 나오기 때문에 10진수 정수로 변환해줌
             // &endptr은 오류 검출을 위해 있음
@@ -90,6 +89,8 @@ int findMafia(int *mafia) {
             mafia[cnt++] = i;
         }
     }
+
+    fclose(eviFp);
     return cnt;
 }
 
@@ -119,7 +120,7 @@ int main() {
     //.. 표시가 10개 나올 때 까지 대기 후 findMafia 실행
     //일정시간동안 wait 시키려고 했으나, 적용되는데 걸리는 시간이 pc상황에 따라 다름
     printf("Please wait until there are more than 10 !! marks\n");
-    printf("and then enter any character : ");
+    printf("and then enter any character\n");
     scanf("%c", &delay);
 
     numMafia = findMafia(mafia);

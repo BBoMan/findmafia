@@ -1,0 +1,8 @@
+{
+    "C_Cpp.errorSquiggles": "disabled",
+    "files.associations": {
+        "signal.h": "c",
+        "hello.h": "c",
+        "types.h": "c"
+    }
+}

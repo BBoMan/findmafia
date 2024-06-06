@@ -11,7 +11,7 @@
 int getPIDs(pid_t *pids) {
     DIR *dir;
     struct dirent *entry;
-    int count = 0;
+    int cnt = 0;
 
     // /proc 디렉토리 열기
     dir = opendir("/proc");
@@ -45,7 +45,7 @@ int getPIDs(pid_t *pids) {
                         // PID에 해당하는 프로세스의 명령 라인에 linuxtown_class라는 문자열이 있는지 검색
                         if (strstr(cmdline, "linuxtown_class") != NULL) {
                             //pid_t 배열에 pid값 넣기 / sendSIGUSR1() 함수를 이용하기 위함
-                            pids[count++] = (pid_t)pid;
+                            pids[cnt++] = (pid_t)pid;
                         }
                     }
                     fclose(fp);
@@ -56,36 +56,78 @@ int getPIDs(pid_t *pids) {
 
     closedir(dir);
     //이후 반복문을 몇번 반복할지 정하기 위함
-    return count;
+    return cnt;
 }
 
+//결과 값으로 찾아낸 pid값을 return
 void sendSIGUSR1(pid_t pid) {
+    int pidNum;
+    long result;
     //PID가 pid인 프로세스에 kill -10 (SIGUSR1 시그널을 보냄)
     if (kill(pid, 10) == 0) {
-        
+
     } else {
         perror("Error sending SIGUSR1 signal");
-        exit(EXIT_FAILURE);
+        exit(-1);
     }
+}
+
+int findMafia(int *mafia) {
+    //confession.txt 파일의 결과는 !!! 혹은 ... 인 것으로 확인했기 때문
+    char evi[4];
+    int cnt=0;
+
+    //confession.txt 파일 열기
+    FILE *eviFp = fopen("confession.txt", "r");
+    if (eviFp == NULL) {
+        //오류 있으면 -1 return
+        perror("file open error");
+        return -1;
+    }
+    
+    for(int i=0; fgets(evi, sizeof(evi), eviFp) != NULL; i++) {
+        if (strstr(evi, "!") != NULL) {
+            mafia[cnt++] = i;
+        }
+    }
+    return cnt;
 }
 
 int main() {
-    pid_t pids[MAX_PROCESS];
+    pid_t pids[MAX_PROCESS];    //linuxtown의 모든 사람들의 pid를 저장
     pid_t pid;
-    int numProcess;
+    int numPeople;
+    int mafia[MAX_PROCESS]; //mafia의 pid를 저장
+    int numMafia;
 
     // linuxtown_class 실행파일에 의해서 생성된 프로세스의 PID를 pids 배열에 넣고
-    // 그 개수를 numProcess에 return
-    numProcess = getPIDs(pids);
-    if (numProcess == -1) {
-        return EXIT_FAILURE;
+    // 그 개수를 numPeople에 return
+    numPeople = getPIDs(pids);
+    if (numPeople == -1) {
+        return -1;
     }
 
     // linuxtown_class 실행파일에 의해서 생성된 프로세스의 PID에 해당하는 프로세스에 SIGUSR1 signal 보내기
-    for (int i = 0; i < numProcess; i++) {
+    // confession.txt 파일 완성하기
+    for (int i = 0; i < numPeople; i++) {
         pid=pids[i];
         sendSIGUSR1(pid);
     }
 
-    return EXIT_SUCCESS;
+    numMafia = findMafia(mafia);
+    if (numMafia == -1) {
+        return -1;
+    }
+
+    printf("mafia = %d\n", numMafia);
+    printf("citizen = %d\n", numPeople-numMafia);
+    printf("=== mafia list ==\n\n");
+
+    for(int i=0; i<numMafia; i++) {
+        //테스트를 통해, confession.txt 파일에 !!! or ... 이 추가되는 방식이
+        //SIGUSR1을 받으면 마지막 부분부터 채워지는 것을 확인.
+        printf("%d\n", pids[mafia[i]]);
+    }
+
+    return 0;
 }

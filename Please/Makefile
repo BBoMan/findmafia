@@ -1,10 +1,7 @@
 all : launch sumfact
 
-sumfact : sumfact.c
-	gcc -o sumfact sumfact.c
-
-launch : launch.c
-	gcc -o launch launch.c
+sim : sim.c
+	gcc -o sim sim.c
 
 clean:
-	rm -f launch launch.o sumfact sumfact.o
+	rm -f sim

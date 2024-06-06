@@ -99,13 +99,16 @@ int main() {
         lineCount = 0;
         pid=pids[i];
         sendSIGUSR1(pid);
+        sleep(2);
         if(next){
             confession = fopen("confession.txt", "r");
             i--;
             if(confession != NULL)
                 next--;
         } else {
+            printf("%d / ", i+1);
             while(lineCount<i+1) {
+                sleep(1);
                 rewind(confession);
                 lineCount = 0;
                 while(fgets(cfs, sizeof(cfs), confession) != NULL) {
@@ -114,6 +117,7 @@ int main() {
             }
             if (strstr(cfs, "!!!") != NULL) {
                 mafia[cnt++] = (int)pid;
+                printf("%d is mafia\n");
             }
         }
     }
